@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Pre-commit hook: runs dotnet format on staged .cs files
+STAGED_CS_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.cs$')
+
+if [ -z "$STAGED_CS_FILES" ]; then
+  exit 0
+fi
+
+echo "Running dotnet format on staged .cs files..."
+
+# Format only the staged files
+dotnet format gRPCLessons.slnx --include $STAGED_CS_FILES --no-restore
+
+# Re-stage the formatted files
+echo "$STAGED_CS_FILES" | xargs git add
+
+echo "dotnet format complete."

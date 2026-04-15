@@ -1,0 +1,52 @@
+using System.Text.Json;
+using Confluent.Kafka;
+using Microsoft.AspNetCore.SignalR;
+using NotificationService.Hubs;
+
+namespace NotificationService.SignalR.Services;
+
+public class KafkaConsumerService(
+    ILogger<KafkaConsumerService> logger,
+    IConsumer<string, string> consumer,
+    IHubContext<LocationHub> hubContext) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        consumer.Subscribe("location-updates");
+        logger.LogInformation("Subscribed to topic 'location-updates'");
+
+        await Task.Run(async () =>
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    var result = consumer.Consume(stoppingToken);
+                    var message = result.Message.Value;
+
+                    logger.LogInformation("Consumed message: {Message}", message);
+
+                    using var doc = JsonDocument.Parse(message);
+                    var root = doc.RootElement;
+
+                    var latitude = root.GetProperty("Latitude").GetDouble();
+                    var longitude = root.GetProperty("Longitude").GetDouble();
+                    var deviceId = root.GetProperty("DeviceId").GetString()!;
+                    var timestamp = root.GetProperty("Timestamp").GetString()!;
+
+                    await hubContext.Clients.All.SendAsync(
+                        "ReceiveLocationUpdate",
+                        latitude,
+                        longitude,
+                        deviceId,
+                        timestamp,
+                        stoppingToken);
+                }
+                catch (ConsumeException ex)
+                {
+                    logger.LogError(ex, "Error consuming Kafka message");
+                }
+            }
+        }, stoppingToken);
+    }
+}

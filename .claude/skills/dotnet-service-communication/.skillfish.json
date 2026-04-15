@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "dotnet-service-communication",
+  "owner": "rudironsoni",
+  "repo": "synaxis",
+  "path": ".agent/skills/dotnet-service-communication",
+  "branch": "main",
+  "sha": "6fad1cba953df9655bdacf1b05f10c72a83970cc",
+  "source": "manual"
+}

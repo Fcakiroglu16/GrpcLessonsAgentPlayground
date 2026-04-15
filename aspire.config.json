@@ -1,0 +1,5 @@
+{
+    "appHost": {
+        "path": "gRPCLessons.AppHost\\gRPCLessons.AppHost.csproj"
+    }
+}

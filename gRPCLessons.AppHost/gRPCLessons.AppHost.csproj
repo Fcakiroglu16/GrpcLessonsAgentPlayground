@@ -1,0 +1,22 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.2.2">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>c489954e-e5db-491d-b990-45533639f81d</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Kafka" Version="13.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LocationService.Client\LocationService.Client.csproj" />
+    <ProjectReference Include="..\LocationService\LocationService.GRPC.csproj" />
+    <ProjectReference Include="..\NotificationService\NotificationService.SignalR.csproj" />
+    <ProjectReference Include="..\WebApplication.RazorPages\WebApplication.RazorPages.csproj" />
+  </ItemGroup>
+
+</Project>

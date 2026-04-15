@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "LocationService";
+
+package location;
+
+service LocationTracking {
+  rpc StreamLocations (stream LocationUpdate) returns (LocationResponse);
+}
+
+message LocationUpdate {
+  double latitude = 1;
+  double longitude = 2;
+  string device_id = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+message LocationResponse {
+  int32 received_count = 1;
+  string status = 2;
+}

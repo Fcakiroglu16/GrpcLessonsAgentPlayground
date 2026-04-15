@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="gRPCLessons.AppHost/gRPCLessons.AppHost.csproj" Id="2fab8c83-7970-416c-be86-750c5def1ba1" />
+  <Project Path="gRPCLessons.ServiceDefaults/gRPCLessons.ServiceDefaults.csproj" />
+  <Project Path="LocationService.Client/LocationService.Client.csproj" Id="71ee8a96-99b4-4938-a4d3-b0e33ff1c5a5" />
+  <Project Path="LocationService/LocationService.GRPC.csproj" Id="c5215fe5-a9d4-4081-9ad6-b3d8bf7c4695" />
+  <Project Path="NotificationService/NotificationService.SignalR.csproj" Id="fee94706-7542-488a-90d6-0fe7fe9d217d" />
+  <Project Path="WebApplication.RazorPages/WebApplication.RazorPages.csproj" Id="5cf7e770-5e9c-4c31-9fb4-697f9b86f042" />
+</Solution>

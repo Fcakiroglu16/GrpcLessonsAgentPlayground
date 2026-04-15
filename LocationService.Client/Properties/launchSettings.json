@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "LocationService.Client": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
