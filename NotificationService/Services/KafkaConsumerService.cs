@@ -33,6 +33,7 @@ public class KafkaConsumerService(
                     var longitude = root.GetProperty("Longitude").GetDouble();
                     var deviceId = root.GetProperty("DeviceId").GetString()!;
                     var timestamp = root.GetProperty("Timestamp").GetString()!;
+                    var mobileAppId = root.GetProperty("MobileAppId").GetString()!;
 
                     await hubContext.Clients.All.SendAsync(
                         "ReceiveLocationUpdate",
@@ -40,6 +41,7 @@ public class KafkaConsumerService(
                         longitude,
                         deviceId,
                         timestamp,
+                        mobileAppId,
                         stoppingToken);
                 }
                 catch (ConsumeException ex)

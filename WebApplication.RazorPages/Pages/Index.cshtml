@@ -20,6 +20,7 @@
                     <th>Latitude</th>
                     <th>Longitude</th>
                     <th>Timestamp</th>
+                    <th>Mobile App ID</th>
                 </tr>
             </thead>
             <tbody id="locationTableBody">
@@ -53,13 +54,14 @@
             .withAutomaticReconnect()
             .build();
 
-        connection.on("ReceiveLocationUpdate", function (latitude, longitude, deviceId, timestamp) {
+        connection.on("ReceiveLocationUpdate", function (latitude, longitude, deviceId, timestamp, mobileAppId) {
             var row = document.createElement("tr");
             row.innerHTML =
                 "<td>" + escapeHtml(deviceId) + "</td>" +
                 "<td>" + latitude.toFixed(6) + "</td>" +
                 "<td>" + longitude.toFixed(6) + "</td>" +
-                "<td>" + escapeHtml(timestamp) + "</td>";
+                "<td>" + escapeHtml(timestamp) + "</td>" +
+                "<td>" + escapeHtml(mobileAppId) + "</td>";
             tableBody.insertBefore(row, tableBody.firstChild);
 
             while (tableBody.rows.length > maxRows) {
