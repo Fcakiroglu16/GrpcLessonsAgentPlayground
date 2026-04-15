@@ -13,6 +13,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["WebApplication.RazorPages/WebApplication.RazorPages.csproj", "WebApplication.RazorPages/"]
+COPY ["gRPCLessons.ServiceDefaults/gRPCLessons.ServiceDefaults.csproj", "gRPCLessons.ServiceDefaults/"]
 RUN dotnet restore "./WebApplication.RazorPages/WebApplication.RazorPages.csproj"
 COPY . .
 WORKDIR "/src/WebApplication.RazorPages"
