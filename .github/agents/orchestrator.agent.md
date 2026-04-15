@@ -4,8 +4,35 @@ description: "Use when implementing the full real-time location tracking pipelin
 tools:
   - read
   - search
+  - edit
+  - execute
   - runInTerminal
   - agent
+  - web
+  - todo
+  - argocd-mcp-stdio/*
+  - aspire/*
+  - Azure MCP/*
+  - Azure SQL Database/*
+  - com.microsoft/azure/*
+  - CopilotMod/*
+  - Foundry MCP/*
+  - Update Tools/*
+  - GitHub Copilot modernization Deploy/*
+  - GitKraken/*
+  - io.github.github/github-mcp-server/*
+  - kubernetes/*
+  - microsoft.docs.mcp/*
+  - microsoft/azure-devops-mcp/*
+  - microsoft/markitdown/*
+  - microsoftdocs/mcp/*
+  - pylance mcp server/*
+  - AI Toolkit for Visual Studio Code/*
+  - Azure Resources/*
+  - Container Tools/*
+  - GitHub Copilot modernization/*
+  - GitHub Copilot modernization - upgrade for Java/*
+  - GitHub Pull Requests/*
 agents:
   - location-service
   - notification-service
