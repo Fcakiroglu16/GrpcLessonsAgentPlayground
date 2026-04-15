@@ -26,6 +26,7 @@
                             <th>Longitude</th>
                             <th>Timestamp</th>
                             <th>Mobile App ID</th>
+                            <th>Kurye ID</th>
                         </tr>
                     </thead>
                     <tbody id="locationTableBody">
@@ -111,7 +112,7 @@
             .withAutomaticReconnect()
             .build();
 
-        connection.on("ReceiveLocationUpdate", function (latitude, longitude, deviceId, timestamp, mobileAppId) {
+        connection.on("ReceiveLocationUpdate", function (latitude, longitude, deviceId, timestamp, mobileAppId, courierId) {
             // Update map
             updateMap(latitude, longitude, deviceId);
 
@@ -122,7 +123,8 @@
                 "<td>" + latitude.toFixed(6) + "</td>" +
                 "<td>" + longitude.toFixed(6) + "</td>" +
                 "<td>" + escapeHtml(timestamp) + "</td>" +
-                "<td>" + escapeHtml(mobileAppId) + "</td>";
+                "<td>" + escapeHtml(mobileAppId) + "</td>" +
+                "<td>" + escapeHtml(courierId) + "</td>";
             tableBody.insertBefore(row, tableBody.firstChild);
 
             while (tableBody.rows.length > maxRows) {
