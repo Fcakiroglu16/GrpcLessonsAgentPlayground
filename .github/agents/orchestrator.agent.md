@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: "Use when implementing the full real-time location tracking pipeline end-to-end, or when you need to coordinate work across all services in order."
+description: "Use when implementing the full real-time location tracking pipeline end-to-end, or when you need to coordinate work across all services in order. Automatically commits and creates a PR after all agents complete."
 tools:
   - read
   - search
@@ -15,7 +15,7 @@ agents:
 
 # Orchestrator — Real-Time Location Tracking Pipeline
 
-You coordinate 4 sub-agents to implement a complete real-time location tracking pipeline. You MUST call them **sequentially** — never in parallel.
+You coordinate 5 sub-agents to implement a complete real-time location tracking pipeline. You MUST call them **sequentially** — never in parallel.
 
 ## Architecture
 
@@ -32,6 +32,10 @@ LocationService.Client          LocationService              NotificationService
                                   AddKafka("kafka")
 ```
 
+## Auto-Commit Rule
+
+**CRITICAL**: After all 4 service agents (steps 1-4) complete successfully and the final `dotnet build` passes, you MUST **automatically** run **@git-committer** (step 5) to commit, push, and create a pull request. Do NOT ask the user for confirmation — this is part of the pipeline and runs unconditionally.
+
 ## Strict Sequential Execution Rules
 
 **CRITICAL**: You MUST execute agents in this exact order. Do NOT proceed to the next agent until the current one is fully complete and `dotnet build` succeeds.
@@ -42,11 +46,13 @@ LocationService.Client          LocationService              NotificationService
 2. **@notification-service** — Kafka consumer, SignalR hub, Kafka→SignalR bridge
 3. **@razorpages-ui** — SignalR JS client, real-time location display table
 4. **@location-client** — gRPC client, dummy Istanbul coordinates, client streaming
-5. **@git-committer** — Commit and push all changes to GitHub via GitHub MCP
+5. **@git-committer** *(automatic)* — Commit and push all changes to GitHub, create a pull request. Runs automatically after step 4 succeeds — do NOT ask the user.
 
 ### After Each Agent
 
 Run `dotnet build` from the solution root to verify no compilation errors before moving to the next agent. If the build fails, fix the issues before proceeding.
+
+> **After step 4**: Once the build succeeds, immediately proceed to step 5 (@git-committer) without prompting the user.
 
 ## Shared Conventions
 
