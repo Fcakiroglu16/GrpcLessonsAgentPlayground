@@ -1,24 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace WebApplication.RazorPages.Pages
+namespace WebApplication.RazorPages.Pages;
+
+public class IndexModel : PageModel
 {
-    public class IndexModel : PageModel
+    private readonly IConfiguration _configuration;
+
+    public string NotificationServiceUrl { get; set; } = string.Empty;
+
+    public IndexModel(IConfiguration configuration)
     {
-        private readonly IConfiguration _configuration;
+        _configuration = configuration;
+    }
 
-        public string NotificationServiceUrl { get; set; } = string.Empty;
-
-        public IndexModel(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        public void OnGet()
-        {
-            NotificationServiceUrl = _configuration["services:notificationservice:https:0"]
-                ?? _configuration["services:notificationservice:http:0"]
-                ?? "https://localhost:5003";
-        }
+    public void OnGet()
+    {
+        NotificationServiceUrl = _configuration["services:notificationservice:https:0"]
+            ?? _configuration["services:notificationservice:http:0"]
+            ?? "https://localhost:5003";
     }
 }

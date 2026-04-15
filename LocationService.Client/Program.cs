@@ -1,4 +1,4 @@
-﻿using LocationService.Client;
+using LocationService.Client;
 
 var builder = Host.CreateApplicationBuilder(args);
 
