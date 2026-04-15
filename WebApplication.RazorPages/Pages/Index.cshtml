@@ -4,25 +4,12 @@
     ViewData["Title"] = "Kargo Konum Takip";
 }
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<style>
-    #map {
-        width: 100%;
-        height: 500px;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-    }
-</style>
-
 <div class="container-fluid">
     <h1 class="display-6 mb-3">Kargo Konum Takip</h1>
 
     <div class="mb-3">
         <span id="connectionStatus" class="badge bg-danger">Disconnected</span>
-    </div>
-
-    <div class="mb-4">
-        <div id="map"></div>
+        <a asp-page="/Map" class="btn btn-sm btn-outline-primary ms-2">Haritayı Görüntüle</a>
     </div>
 
     <div class="table-responsive">
@@ -42,7 +29,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
     <script>
         const hubUrl = "@Model.NotificationServiceUrl" + "/locationHub";
@@ -50,32 +36,6 @@
 
         const statusBadge = document.getElementById("connectionStatus");
         const tableBody = document.getElementById("locationTableBody");
-
-        // Leaflet map setup
-        const map = L.map("map").setView([41.0082, 28.9784], 12);
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19
-        }).addTo(map);
-
-        // Device tracking
-        const colorPalette = ['#e6194b', '#3cb44b', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45'];
-        var colorIndex = 0;
-        const devicePaths = {};
-
-        function getDeviceData(deviceId) {
-            if (!devicePaths[deviceId]) {
-                var color = colorPalette[colorIndex % colorPalette.length];
-                colorIndex++;
-                devicePaths[deviceId] = {
-                    color: color,
-                    latlngs: [],
-                    polyline: L.polyline([], { color: color, weight: 3 }).addTo(map),
-                    markers: []
-                };
-            }
-            return devicePaths[deviceId];
-        }
 
         function setStatus(text, bgClass) {
             statusBadge.textContent = text;
@@ -94,30 +54,6 @@
             .build();
 
         connection.on("ReceiveLocationUpdate", function (latitude, longitude, deviceId, timestamp) {
-            // Update map
-            var device = getDeviceData(deviceId);
-            var latlng = [latitude, longitude];
-            device.latlngs.push(latlng);
-            device.polyline.setLatLngs(device.latlngs);
-
-            var marker = L.circleMarker(latlng, {
-                radius: 5,
-                color: device.color,
-                fillColor: device.color,
-                fillOpacity: 0.8
-            }).addTo(map);
-
-            marker.bindPopup(
-                "<b>" + escapeHtml(deviceId) + "</b><br>" +
-                "Lat: " + latitude.toFixed(6) + "<br>" +
-                "Lng: " + longitude.toFixed(6) + "<br>" +
-                "Time: " + escapeHtml(timestamp)
-            );
-
-            device.markers.push(marker);
-            map.panTo(latlng);
-
-            // Update table
             var row = document.createElement("tr");
             row.innerHTML =
                 "<td>" + escapeHtml(deviceId) + "</td>" +
