@@ -15,6 +15,7 @@ message LocationUpdate {
   double longitude = 2;
   string device_id = 3;
   google.protobuf.Timestamp timestamp = 4;
+  string mobile_app_id = 5;
 }
 
 message LocationResponse {

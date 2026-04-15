@@ -1,6 +1,6 @@
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using LocationService;
-using Google.Protobuf.WellKnownTypes;
 
 namespace LocationService.Client;
 
@@ -77,7 +77,8 @@ public class LocationStreamingWorker(IConfiguration configuration, ILogger<Locat
                     Latitude = lat,
                     Longitude = lng,
                     DeviceId = deviceId,
-                    Timestamp = Timestamp.FromDateTime(DateTime.UtcNow)
+                    Timestamp = Timestamp.FromDateTime(DateTime.UtcNow),
+                    MobileAppId = "com.cargo.tracker"
                 };
 
                 await call.RequestStream.WriteAsync(update, stoppingToken);

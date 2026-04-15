@@ -76,7 +76,7 @@
             .withAutomaticReconnect()
             .build();
 
-        connection.on("ReceiveLocationUpdate", function (latitude, longitude, deviceId, timestamp) {
+        connection.on("ReceiveLocationUpdate", function (latitude, longitude, deviceId, timestamp, mobileAppId) {
             var device = getDeviceData(deviceId);
             var latlng = [latitude, longitude];
             device.latlngs.push(latlng);
@@ -91,6 +91,7 @@
 
             marker.bindPopup(
                 "<b>" + escapeHtml(deviceId) + "</b><br>" +
+                "App: " + escapeHtml(mobileAppId) + "<br>" +
                 "Lat: " + latitude.toFixed(6) + "<br>" +
                 "Lng: " + longitude.toFixed(6) + "<br>" +
                 "Time: " + escapeHtml(timestamp)
