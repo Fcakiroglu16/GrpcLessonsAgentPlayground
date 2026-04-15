@@ -59,6 +59,8 @@ public class LocationStreamingWorker(IConfiguration configuration, ILogger<Locat
         (double Lat, double Lng)[] waypoints,
         CancellationToken stoppingToken)
     {
+        logger.LogInformation("Starting route stream for DeviceId={DeviceId}, CourierId={CourierId}, Waypoints={WaypointCount}",
+            deviceId, courierId, waypoints.Length);
         using var call = client.StreamLocations(cancellationToken: stoppingToken);
         var random = new Random();
         var messageCount = 0;
@@ -67,6 +69,9 @@ public class LocationStreamingWorker(IConfiguration configuration, ILogger<Locat
         {
             var (aLat, aLng) = waypoints[w];
             var (bLat, bLng) = waypoints[w + 1];
+
+            logger.LogDebug("[{DeviceId}] Segment {From} → {To}: ({ALat:F4},{ALng:F4}) → ({BLat:F4},{BLng:F4})",
+                deviceId, w, w + 1, aLat, aLng, bLat, bLng);
 
             for (int step = 0; step < 10 && !stoppingToken.IsCancellationRequested; step++)
             {
