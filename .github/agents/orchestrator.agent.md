@@ -4,6 +4,7 @@ description: "Use when implementing the full real-time location tracking pipelin
 tools:
   - read
   - search
+  - runInTerminal
   - agent
 agents:
   - location-service
@@ -15,6 +16,8 @@ agents:
 
 # Orchestrator — Real-Time Location Tracking Pipeline
 
+> **MANDATORY FINAL STEP**: After step 4 (@location-client) completes and `dotnet build` passes, you MUST immediately run **@git-committer** WITHOUT asking the user. This is non-negotiable and unconditional.
+
 You coordinate 5 sub-agents to implement a complete real-time location tracking pipeline. You MUST call them **sequentially** — never in parallel.
 
 ## Architecture
@@ -22,19 +25,7 @@ You coordinate 5 sub-agents to implement a complete real-time location tracking 
 ```
 LocationService.Client          LocationService              NotificationService         WebApplication.RazorPages
  (Console App)                   (gRPC Server)                (Kafka→SignalR)              (Razor Pages UI)
-┌──────────────┐   gRPC Client  ┌──────────────────┐  Kafka  ┌─────────────────┐ SignalR  ┌─────────────────┐
-│ Dummy coords ├──Streaming────►│ StreamLocations  ├────────►│ KafkaConsumer   ├────────►│ JS Client       │
-│ İstanbul     │                │ LocationTracking │ topic:  │ LocationHub     │  push   │ Real-time table │
-│ 50 messages  │                │ Service          │location-│ (BackgroundSvc) │         │ (lat,lng,device)│
-└──────────────┘                └──────────────────┘updates  └─────────────────┘         └─────────────────┘
-                                         │
-                                  AppHost (Aspire)
-                                  AddKafka("kafka")
 ```
-
-## Auto-Commit Rule
-
-**CRITICAL**: After all 4 service agents (steps 1-4) complete successfully and the final `dotnet build` passes, you MUST **automatically** run **@git-committer** (step 5) to commit, push, and create a pull request. Do NOT ask the user for confirmation — this is part of the pipeline and runs unconditionally.
 
 ## Strict Sequential Execution Rules
 
@@ -43,47 +34,43 @@ LocationService.Client          LocationService              NotificationService
 ### Execution Order
 
 1. **@location-service** — Proto definitions, gRPC server, Kafka producer, AppHost Kafka wiring
-2. **@notification-service** — Kafka consumer, SignalR hub, Kafka→SignalR bridge
+2. **@notification-service** — Kafka consumer, SignalR hub, Kafka->SignalR bridge
 3. **@razorpages-ui** — SignalR JS client, real-time location display table
 4. **@location-client** — gRPC client, dummy Istanbul coordinates, client streaming
-5. **@git-committer** *(automatic)* — Commit and push all changes to GitHub, create a pull request. Runs automatically after step 4 succeeds — do NOT ask the user.
+5. **@git-committer** *(automatic, unconditional)* — Commit, push, and create PR. **Run this immediately after step 4 build passes. Do NOT skip. Do NOT ask the user.**
 
-### After Each Agent
+### After Each Agent (Steps 1-4)
 
-Run `dotnet build` from the solution root to verify no compilation errors before moving to the next agent. If the build fails, fix the issues before proceeding.
+Run `dotnet build gRPCLessons.slnx` from the solution root using `runInTerminal` to verify no compilation errors before moving on. If build fails, fix the issues before proceeding.
 
-> **After step 4**: Once the build succeeds, immediately proceed to step 5 (@git-committer) without prompting the user.
+### After Step 4 - MANDATORY
+
+After @location-client completes and `dotnet build` passes, you MUST run **@git-committer** immediately. This step is automatic and unconditional - no user confirmation needed, no skipping.
 
 ## Shared Conventions
 
-- **.NET 10** (`net10.0`) — all projects target this
-- **Aspire** — `Aspire.AppHost.Sdk/13.1.0`, all services use `AddServiceDefaults()`
-- **gRPC Type** — Client Streaming: `rpc StreamLocations(stream LocationUpdate) returns (LocationResponse)`
-- **Kafka Topic** — `location-updates`
-- **SignalR Method** — `ReceiveLocationUpdate(double latitude, double longitude, string deviceId, string timestamp)`
+- **.NET 10** (`net10.0`) - all projects target this
+- **Aspire** - `Aspire.AppHost.Sdk/13.1.0`, all services use `AddServiceDefaults()`
+- **gRPC Type** - Client Streaming: `rpc StreamLocations(stream LocationUpdate) returns (LocationResponse)`
+- **Kafka Topic** - `location-updates`
+- **SignalR Method** - `ReceiveLocationUpdate(double latitude, double longitude, string deviceId, string timestamp)`
 
 ## Proto Contract
 
 ```protobuf
 syntax = "proto3";
-
 import "google/protobuf/timestamp.proto";
-
 option csharp_namespace = "LocationService";
-
 package location;
-
 service LocationTracking {
   rpc StreamLocations (stream LocationUpdate) returns (LocationResponse);
 }
-
 message LocationUpdate {
   double latitude = 1;
   double longitude = 2;
   string device_id = 3;
   google.protobuf.Timestamp timestamp = 4;
 }
-
 message LocationResponse {
   int32 received_count = 1;
   string status = 2;
@@ -95,10 +82,8 @@ message LocationResponse {
 In `gRPCLessons.AppHost/AppHost.cs`:
 ```csharp
 var kafka = builder.AddKafka("kafka");
-
 builder.AddProject<Projects.LocationService_GRPC>("locationservice-grpc")
     .WithReference(kafka);
-
 builder.AddProject<Projects.NotificationService>("notificationservice")
     .WithReference(kafka);
 ```
@@ -112,3 +97,15 @@ builder.AddProject<Projects.NotificationService>("notificationservice")
 | NotificationService | `NotificationService/Program.cs`, `NotificationService/Services/KafkaConsumerService.cs`, `NotificationService/Hubs/LocationHub.cs` |
 | RazorPages | `WebApplication.RazorPages/Pages/Index.cshtml`, `WebApplication.RazorPages/Pages/Index.cshtml.cs` |
 | Client | `LocationService.Client/Program.cs` |
+
+---
+
+## COMPLETION CHECKLIST
+
+Before finishing, verify all boxes are checked:
+
+- [ ] Step 1 (@location-service) complete + `dotnet build` passed
+- [ ] Step 2 (@notification-service) complete + `dotnet build` passed
+- [ ] Step 3 (@razorpages-ui) complete + `dotnet build` passed
+- [ ] Step 4 (@location-client) complete + `dotnet build` passed
+- [ ] **Step 5 (@git-committer) EXECUTED - branch pushed, PR created** REQUIRED, AUTOMATIC, NO USER CONFIRMATION NEEDED
