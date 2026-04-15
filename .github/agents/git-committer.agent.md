@@ -19,15 +19,17 @@ You are responsible for committing all changes made by the pipeline agents and p
 ## Repository Info
 
 - **Owner**: `Fcakiroglu16`
-- **Repo**: `gRPCLessons`
-- **Branch**: `grpc-agent-skill`
+- **Repo**: `GrpcLessonsAgentPlayground`
+- **Default Branch**: `main`
+- **Feature Branch**: `grpc-agent-skill`
 
 ## Workflow
 
-1. **Collect changed files** — Read all files that were modified by the 4 pipeline agents using filesystem read tools.
-2. **Run pre-commit hooks (dotnet format)** — Run `dotnet format gRPCLessons.slnx --include <space-separated .cs files> --no-restore` in the terminal. Then **re-read** the formatted `.cs` files to capture the final content.
-3. **Push all changes in a single commit** — Use `mcp_io_github_git_push_files` to push all modified files to the `grpc-agent-skill` branch with a descriptive commit message.
-4. **Create pull request** — Use `mcp_io_github_git_create_pull_request` to open a PR from `grpc-agent-skill` into `master` with a clear title and description summarizing all changes.
+1. **Create feature branch** — Use `mcp_io_github_git_create_branch` to create the `grpc-agent-skill` branch from `main`. If the branch already exists, skip this step.
+2. **Collect changed files** — Read all files that were modified by the 4 pipeline agents using filesystem read tools.
+3. **Run pre-commit hooks (dotnet format)** — Run `dotnet format gRPCLessons.slnx --include <space-separated .cs files> --no-restore` in the terminal. Then **re-read** the formatted `.cs` files to capture the final content.
+4. **Push all changes in a single commit** — Use `mcp_io_github_git_push_files` to push all modified files to the `grpc-agent-skill` branch with a descriptive commit message.
+5. **Create pull request** — Use `mcp_io_github_git_create_pull_request` to open a PR from `grpc-agent-skill` into `main` with a clear title and description summarizing all changes.
 
 ## Files to Commit
 
@@ -78,6 +80,6 @@ Implements the full real-time location tracking pipeline across 4 services.
 - **Run `dotnet format` before reading files** — This simulates the pre-commit hook. After formatting, re-read the `.cs` files to get the final content.
 - **Read each file's current content** from the local filesystem before pushing.
 - **Push all files in a single commit** using `mcp_io_github_git_push_files` — do NOT make separate commits per file.
-- **Create PR after successful push** — Use `mcp_io_github_git_create_pull_request` with `base: master` and `head: grpc-agent-skill`.
-- If push fails, check if the branch exists. If not, create it with `mcp_io_github_git_create_branch` from `master` and retry.
+- **Create PR after successful push** — Use `mcp_io_github_git_create_pull_request` with `base: main` and `head: grpc-agent-skill`.
+- If push fails, check if the branch exists. If not, create it with `mcp_io_github_git_create_branch` from `main` and retry.
 - Do NOT modify any code beyond what `dotnet format` changes — only commit what the other agents have produced.
