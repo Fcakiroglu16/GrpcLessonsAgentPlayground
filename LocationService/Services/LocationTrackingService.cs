@@ -20,8 +20,8 @@ public class LocationTrackingService(
             count++;
 
             logger.LogInformation(
-                "Received location update #{Count}: DeviceId={DeviceId}, MobileAppId={MobileAppId}, Lat={Latitude}, Lon={Longitude}",
-                count, update.DeviceId, update.MobileAppId, update.Latitude, update.Longitude);
+                "Received location update #{Count}: DeviceId={DeviceId}, MobileAppId={MobileAppId}, CourierId={CourierId}, CourierName={CourierName}, Lat={Latitude}, Lon={Longitude}",
+                count, update.DeviceId, update.MobileAppId, update.CourierId, update.CourierName, update.Latitude, update.Longitude);
 
             var json = JsonSerializer.Serialize(new
             {
@@ -29,6 +29,8 @@ public class LocationTrackingService(
                 update.Longitude,
                 DeviceId = update.DeviceId,
                 MobileAppId = update.MobileAppId,
+                CourierId = update.CourierId,
+                CourierName = update.CourierName,
                 Timestamp = update.Timestamp?.ToDateTimeOffset()
             });
 
