@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model IndexModel
 @{
     ViewData["Title"] = "Kargo Konum Takip";
@@ -27,6 +27,7 @@
                             <th>Timestamp</th>
                             <th>Mobile App ID</th>
                             <th>Kurye ID</th>
+                            <th>Kurye İsmi</th>
                         </tr>
                     </thead>
                     <tbody id="locationTableBody">
@@ -112,7 +113,7 @@
             .withAutomaticReconnect()
             .build();
 
-        connection.on("ReceiveLocationUpdate", function (latitude, longitude, deviceId, timestamp, mobileAppId, courierId) {
+        connection.on("ReceiveLocationUpdate", function (latitude, longitude, deviceId, timestamp, mobileAppId, courierId, courierName) {
             // Update map
             updateMap(latitude, longitude, deviceId);
 
@@ -124,7 +125,8 @@
                 "<td>" + longitude.toFixed(6) + "</td>" +
                 "<td>" + escapeHtml(timestamp) + "</td>" +
                 "<td>" + escapeHtml(mobileAppId) + "</td>" +
-                "<td>" + escapeHtml(courierId) + "</td>";
+                "<td>" + escapeHtml(courierId) + "</td>" +
+                "<td>" + escapeHtml(courierName) + "</td>";
             tableBody.insertBefore(row, tableBody.firstChild);
 
             while (tableBody.rows.length > maxRows) {

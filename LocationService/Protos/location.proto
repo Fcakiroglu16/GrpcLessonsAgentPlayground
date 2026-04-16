@@ -17,6 +17,7 @@ message LocationUpdate {
   google.protobuf.Timestamp timestamp = 4;
   string mobile_app_id = 5;
   string courier_id = 6;
+  string courier_name = 7;
 }
 
 message LocationResponse {

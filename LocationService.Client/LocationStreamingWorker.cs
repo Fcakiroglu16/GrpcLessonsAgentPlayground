@@ -6,23 +6,23 @@ namespace LocationService.Client;
 
 public class LocationStreamingWorker(IConfiguration configuration, ILogger<LocationStreamingWorker> logger) : BackgroundService
 {
-    private static readonly (string DeviceId, string CourierId, (double Lat, double Lng)[] Waypoints)[] Routes =
+    private static readonly (string DeviceId, string CourierId, string CourierName, (double Lat, double Lng)[] Waypoints)[] Routes =
     [
-        ("courier-istanbul-ankara", "KRY-1001", [
+        ("courier-istanbul-ankara", "KRY-1001", "Ahmet Yılmaz", [
             (41.0082, 28.9784),  // Istanbul
             (40.8027, 29.4307),  // Gebze
             (40.6940, 30.4028),  // Sakarya
             (40.7356, 31.6089),  // Bolu
             (39.9334, 32.8597),  // Ankara
         ]),
-        ("courier-istanbul-izmir", "KRY-1002", [
+        ("courier-istanbul-izmir", "KRY-1002", "Mehmet Demir", [
             (41.0082, 28.9784),  // Istanbul
             (40.1885, 29.0610),  // Bursa
             (39.6484, 27.8826),  // Balıkesir
             (38.6191, 27.4289),  // Manisa
             (38.4192, 27.1287),  // İzmir
         ]),
-        ("courier-ankara-antalya", "KRY-1003", [
+        ("courier-ankara-antalya", "KRY-1003", "Ayşe Kaya", [
             (39.9334, 32.8597),  // Ankara
             (37.8746, 32.4932),  // Konya
             (37.7648, 30.5566),  // Isparta
@@ -45,7 +45,7 @@ public class LocationStreamingWorker(IConfiguration configuration, ILogger<Locat
         var client = new LocationTracking.LocationTrackingClient(channel);
 
         var tasks = Routes.Select(route =>
-            StreamCourierRoute(client, route.DeviceId, route.CourierId, route.Waypoints, stoppingToken));
+            StreamCourierRoute(client, route.DeviceId, route.CourierId, route.CourierName, route.Waypoints, stoppingToken));
 
         await Task.WhenAll(tasks);
 
@@ -56,11 +56,12 @@ public class LocationStreamingWorker(IConfiguration configuration, ILogger<Locat
         LocationTracking.LocationTrackingClient client,
         string deviceId,
         string courierId,
+        string courierName,
         (double Lat, double Lng)[] waypoints,
         CancellationToken stoppingToken)
     {
-        logger.LogInformation("Starting route stream for DeviceId={DeviceId}, CourierId={CourierId}, Waypoints={WaypointCount}",
-            deviceId, courierId, waypoints.Length);
+        logger.LogInformation("Starting route stream for DeviceId={DeviceId}, CourierId={CourierId}, CourierName={CourierName}, Waypoints={WaypointCount}",
+            deviceId, courierId, courierName, waypoints.Length);
         using var call = client.StreamLocations(cancellationToken: stoppingToken);
         var random = new Random();
         var messageCount = 0;
@@ -84,6 +85,7 @@ public class LocationStreamingWorker(IConfiguration configuration, ILogger<Locat
                     Longitude = lng,
                     DeviceId = deviceId,
                     CourierId = courierId,
+                    CourierName = courierName,
                     Timestamp = Timestamp.FromDateTime(DateTime.UtcNow),
                     MobileAppId = "com.cargo.tracker"
                 };

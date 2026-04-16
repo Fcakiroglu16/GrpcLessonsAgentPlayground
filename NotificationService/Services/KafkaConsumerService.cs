@@ -29,12 +29,45 @@ public class KafkaConsumerService(
                     using var doc = JsonDocument.Parse(message);
                     var root = doc.RootElement;
 
-                    var latitude = root.GetProperty("Latitude").GetDouble();
-                    var longitude = root.GetProperty("Longitude").GetDouble();
-                    var deviceId = root.GetProperty("DeviceId").GetString()!;
-                    var timestamp = root.GetProperty("Timestamp").GetString()!;
-                    var mobileAppId = root.GetProperty("MobileAppId").GetString()!;
-                    var courierId = root.GetProperty("CourierId").GetString()!;
+                    if (!root.TryGetProperty("Latitude", out var latitudeElement) || !latitudeElement.TryGetDouble(out var latitude))
+                    {
+                        logger.LogWarning("Skipping Kafka message because Latitude is missing or invalid: {Message}", message);
+                        continue;
+                    }
+
+                    if (!root.TryGetProperty("Longitude", out var longitudeElement) || !longitudeElement.TryGetDouble(out var longitude))
+                    {
+                        logger.LogWarning("Skipping Kafka message because Longitude is missing or invalid: {Message}", message);
+                        continue;
+                    }
+
+                    if (!root.TryGetProperty("DeviceId", out var deviceIdElement))
+                    {
+                        logger.LogWarning("Skipping Kafka message because DeviceId is missing: {Message}", message);
+                        continue;
+                    }
+
+                    if (!root.TryGetProperty("Timestamp", out var timestampElement))
+                    {
+                        logger.LogWarning("Skipping Kafka message because Timestamp is missing: {Message}", message);
+                        continue;
+                    }
+
+                    if (!root.TryGetProperty("MobileAppId", out var mobileAppIdElement))
+                    {
+                        logger.LogWarning("Skipping Kafka message because MobileAppId is missing: {Message}", message);
+                        continue;
+                    }
+
+                    var deviceId = deviceIdElement.GetString() ?? string.Empty;
+                    var timestamp = timestampElement.GetString() ?? string.Empty;
+                    var mobileAppId = mobileAppIdElement.GetString() ?? string.Empty;
+                    var courierId = root.TryGetProperty("CourierId", out var courierIdElement)
+                        ? courierIdElement.GetString() ?? string.Empty
+                        : string.Empty;
+                    var courierName = root.TryGetProperty("CourierName", out var courierNameElement)
+                        ? courierNameElement.GetString() ?? string.Empty
+                        : string.Empty;
 
                     await hubContext.Clients.All.SendAsync(
                         "ReceiveLocationUpdate",
@@ -44,11 +77,20 @@ public class KafkaConsumerService(
                         timestamp,
                         mobileAppId,
                         courierId,
+                        courierName,
                         stoppingToken);
                 }
                 catch (ConsumeException ex)
                 {
                     logger.LogError(ex, "Error consuming Kafka message");
+                }
+                catch (JsonException ex)
+                {
+                    logger.LogError(ex, "Skipping Kafka message due to invalid JSON");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    logger.LogError(ex, "Skipping Kafka message due to unexpected JSON content");
                 }
             }
         }, stoppingToken);
