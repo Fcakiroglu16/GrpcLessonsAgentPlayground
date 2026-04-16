@@ -12,6 +12,7 @@ public class LocationTrackingService(
         IAsyncStreamReader<LocationUpdate> requestStream,
         ServerCallContext context)
     {
+        logger.LogInformation("New gRPC streaming session started from {Peer}", context.Peer);
         var count = 0;
 
         while (await requestStream.MoveNext(context.CancellationToken))
@@ -39,6 +40,8 @@ public class LocationTrackingService(
                 Key = update.DeviceId,
                 Value = json
             });
+
+            logger.LogDebug("Published location update for DeviceId={DeviceId} to Kafka topic 'location-updates'", update.DeviceId);
         }
 
         logger.LogInformation("Stream completed. Total updates received: {Count}", count);

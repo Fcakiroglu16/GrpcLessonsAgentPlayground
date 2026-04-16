@@ -71,6 +71,9 @@ public class LocationStreamingWorker(IConfiguration configuration, ILogger<Locat
             var (aLat, aLng) = waypoints[w];
             var (bLat, bLng) = waypoints[w + 1];
 
+            logger.LogDebug("[{DeviceId}] Segment {From} → {To}: ({ALat:F4},{ALng:F4}) → ({BLat:F4},{BLng:F4})",
+                deviceId, w, w + 1, aLat, aLng, bLat, bLng);
+
             for (int step = 0; step < 10 && !stoppingToken.IsCancellationRequested; step++)
             {
                 var lat = aLat + (bLat - aLat) * step / 10.0 + (random.NextDouble() - 0.5) * 0.004;
